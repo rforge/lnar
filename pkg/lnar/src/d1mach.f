@@ -8,6 +8,7 @@ C  D1MACH( 3) = B**(-T), THE SMALLEST RELATIVE SPACING.
 C  D1MACH( 4) = B**(1-T), THE LARGEST RELATIVE SPACING.
 C  D1MACH( 5) = LOG10(B)
 C
+      CHARACTER*250 CHARVAR
       INTEGER SMALL(2)
       INTEGER LARGE(2)
       INTEGER RIGHT(2)
@@ -164,11 +165,13 @@ C     ON FIRST CALL, IF NO DATA UNCOMMENTED, TEST MACHINE TYPES.
                   CALL I1MCRY(LOG10(1), J, 16383, 10100890, 8715215)
                   CALL I1MCRY(LOG10(2), J, 0, 16226447, 9001388)
                ELSE
-                  WRITE(*,9000)
+                  WRITE(CHARVAR,9000)
+                  call rwarn(CHARVAR)
                   STOP 779
                   END IF
             ELSE
-               WRITE(*,9000)
+               WRITE(CHARVAR,9000)
+               call rwarn(CHARVAR)
                STOP 779
                END IF
             END IF
@@ -177,13 +180,15 @@ C     ON FIRST CALL, IF NO DATA UNCOMMENTED, TEST MACHINE TYPES.
 *    SANITY CHECK
       IF (DMACH(4) .GE. 1.0D0) STOP 778
       IF (I .LT. 1 .OR. I .GT. 5) THEN
-         WRITE(*,*) 'D1MACH(I): I =',I,' is out of bounds.'
+         WRITE (CHARVAR,9001) I
+         call rwarn (CHARVAR)
          STOP
          END IF
       D1MACH = DMACH(I)
       RETURN
  9000 FORMAT(/' Adjust D1MACH by uncommenting data statements'/
      *' appropriate for your machine.')
+ 9001 FORMAT("D1MACH(I): I =",I5,", is out of bounds.")
 * /* Standard C source for D1MACH -- remove the * in column 1 */
 *#include <stdio.h>
 *#include <float.h>

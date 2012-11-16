@@ -81,7 +81,7 @@ c get number of words in message. --------------------------------------
       nwds = nch/ncpw
       if (nch .ne. nwds*ncpw) nwds = nwds + 1
 c write the message. ---------------------------------------------------
-      write (lun, 10) (msg(i),i=1,nwds)
+      WRITE(lun, 10) (msg(i),i=1,nwds)
 c-----------------------------------------------------------------------
 c the following format statement is to have the form
 c 10  format(1x,mmann)
@@ -99,13 +99,13 @@ c the following is valid for ncpw = 4.
 c the following is valid for ncpw = 2.
 c 10  format(1x,30a2)
 c-----------------------------------------------------------------------
-      if (ni .eq. 1) write (lun, 20) i1
+      if (ni .eq. 1) WRITE (lun, 20) i1
  20   format(6x,23hin above message,  i1 =,i10)
-      if (ni .eq. 2) write (lun, 30) i1,i2
+      if (ni .eq. 2) WRITE (lun, 30) i1,i2
  30   format(6x,23hin above message,  i1 =,i10,3x,4hi2 =,i10)
-      if (nr .eq. 1) write (lun, 40) r1
+      if (nr .eq. 1) WRITE (lun, 40) r1
  40   format(6x,23hin above message,  r1 =,d21.13)
-      if (nr .eq. 2) write (lun, 50) r1,r2
+      if (nr .eq. 2) WRITE (lun, 50) r1,r2
  50   format(6x,15hin above,  r1 =,d21.13,3x,4hr2 =,d21.13)
 c abort the run if iert = 2. -------------------------------------------
  100  if (iert .ne. 2) return

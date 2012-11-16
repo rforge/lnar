@@ -121,11 +121,9 @@ double llik(spar ** mypar, double *thetas)
       break;
     }
     if(isnan(sum)) {
-	fprintf(stderr,"Log-likelihood evaluation error - try a different initial value\n");
-	printf("Log-likelihood evaluation error - try a different initial value\n");
-	printf("Thetas:\n");
-	for(i=0;i<myparams->x->size;i++) printf("  %f\n",thetas[i]);
-	exit(10);
+	Rprintf("Thetas:\n");
+	for(i=0;i<myparams->x->size;i++) Rprintf("  %f\n",thetas[i]);
+	error("Log-likelihood evaluation error - try a different initial value\n");
     }
     return sum;
 }

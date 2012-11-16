@@ -428,7 +428,7 @@ double proflik(spar ** mypar)
     while (status == GSL_CONTINUE && iter < myparams->maxiter);
     if (status != GSL_SUCCESS)
     {
-	fprintf(stderr,"for theta[%d] the proflik did not converge\n",
+	  warning("for theta[%d] the proflik did not converge\n",
 		myparams->pindex);
     }
     for(i=0;i<sysdim;i++) 
@@ -511,7 +511,7 @@ double proflik2(spar ** mypar)
     while (status == GSL_CONTINUE && iter < myparams->maxiter);
     if (status != GSL_SUCCESS)
     {
-	fprintf(stderr,"for theta[%d] the proflik did not converge\n",
+	  warning("for theta[%d] the proflik did not converge\n",
 		myparams->pindex);
     }
     /*

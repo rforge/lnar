@@ -46,6 +46,13 @@ echo $contents; } ?>
 <p> No content added. </p>
 
 <p> The <strong>project summary page</strong> you can find <a href="http://<?php echo $domain; ?>/projects/<?php echo $group_name; ?>/"><strong>here</strong></a>. </p>
-
+<h2> Ryacas <h2>
+<p> If you have problems installing Ryacas try this experimental and unsupported <a href="pkg/Ryacas_0.2-11.tar.gz">java build</a>.</p>
+<p> You can generate a source package from SVN by issuing the following commands in a terminal: </p>
+<pre>
+  svn checkout svn://scm.r-forge.r-project.org/svnroot/lnar/
+  cd lnar/pkg
+  R CMD build lnar
+</pre>
 </body>
 </html>

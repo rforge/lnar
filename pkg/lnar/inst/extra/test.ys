@@ -95,3 +95,4 @@ For(i:=1,i<=nspecies,i++)
    Echo("fout[",ind,"]=", CForm(vartmp[i]),";");
    ind++;
 ];
+Exit();

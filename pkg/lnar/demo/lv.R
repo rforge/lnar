@@ -13,7 +13,7 @@ compmod(cout,"derivs") # Compile the model
 nthetas<-c(.4,.1,0.4)  # The initial parameter values
 
 #Find the Maximum Likelihood Estimates and Wald CIs
-(run1<-optmod(cout,nthetas=nthetas, mydata=mydata2, method=1,
+(run1<-optmod(cout,nthetas=nthetas, mydata=mydata2, method=0,
               maxiter=300, tcrit=1e-5, relerr=1e-9,
               abserr=1e-9, hessianh=1e-4,
               dfunction=derivs))

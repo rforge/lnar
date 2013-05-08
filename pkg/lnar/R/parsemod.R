@@ -54,10 +54,10 @@ parsemod<-function(y,rfun,thetas,species,
       }    
     yrates <- paste("rates:={",paste(yrfun,collapse=","),"}")
 
-    #paste(.find.package("lnar"),"/extra/test.ys",sep="") #yacas template
+    #paste(find.package("lnar"),"/extra/test.ys",sep="") #yacas template
     require(Ryacas)
     #options(yacas.method = 'system')
-    yacfile <- paste(.find.package("lnar"),"/extra/test.ys",sep="")
+    yacfile <- paste(find.package("lnar"),"/extra/test.ys",sep="")
 
     if(package_version(packageDescription("Ryacas",fields="Version"))
        <"0.2.11") {

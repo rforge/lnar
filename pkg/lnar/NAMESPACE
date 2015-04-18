@@ -1,0 +1,2 @@
+export(calcdens,compmod,lnalik,optmod,parsemod)
+useDynLib(lnar,runmodel)

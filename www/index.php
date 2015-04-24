@@ -47,7 +47,8 @@ echo $contents; } ?>
 
 <p> The <strong>project summary page</strong> you can find <a href="http://<?php echo $domain; ?>/projects/<?php echo $group_name; ?>/"><strong>here</strong></a>. </p>
 <h2> Ryacas </h2>
-<p> If you have problems installing Ryacas try this experimental and unsupported <a href="pkgs/Ryacas_0.2-11.tar.gz">java build</a>.</p>
+<p> If you have problems installing Ryacas try this experimental and unsupported java build<a href="pkgs/Ryacas_0.2-11.tar.gz">[tgz]</a>
+    <a href="pkgs/Ryacas_0.2-11.zip">[zip]</a>. This contains a java port of the <a href="https://en.wikipedia.org/wiki/Yacas">yacas</a></p>
 <h2> Building from source </h2>
 <p> You can generate a source package from SVN by issuing the following commands in a terminal: </p>
 <pre>

@@ -4,7 +4,7 @@ Title: Inference for stochastic kinetic genetic networks.
 Version: 0.0.5
 Date: 2011-05-31
 Author: Vasileios Giagos
-Maintainer: Vasileios Giagos <v.giagos@kent.ac.uk>
+Maintainer: Vasileios Giagos <vgiagos@une.edu.au>
 Description: Likelihood based inference of stochastic kinetic models 
              using a Linear Noise Approximation.
 Depends:  inline, Ryacas

@@ -8,6 +8,7 @@ optmod <- function(cout,nthetas,
                      hessianh=1e-4,
                      method=1,
                      usebfgs=0,
+                     hess=1,
                      dfunction
                      )
   {
@@ -37,7 +38,8 @@ optmod <- function(cout,nthetas,
   if(is.na(match(method,c(0,1,3)))) stop("Please specify a valid method.")
   if(is.na(match(usebfgs,c(0,1))))
     stop("The argument usebfgs can be either 0 or 1 .")
-  
+  if(is.na(match(hess,c(0,1))))
+    stop("The argument hess can be either 0 or 1 .")
   ##By calling the compiled code, we force R to load it.
   dfunction(odesize,mydata[1],mydata[2:(1+odesize)],rep(0,odesize),nthetas)
   
@@ -58,8 +60,10 @@ optmod <- function(cout,nthetas,
               ord=as.integer(Orders),
               thetas=as.double(nthetas),
               usebfgs=as.integer(usebfgs),
-              method=as.integer(method),PACKAGE="lnar")
- })
+              method=as.integer(method),
+              hess=as.integer(hess),
+              PACKAGE="lnar")
+   })
     #Unload the compile code
     #dyn.unload(
     #  unlist(getNativeSymbolInfo(dfunction@generic[1])$package["path"]))

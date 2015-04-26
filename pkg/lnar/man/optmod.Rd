@@ -11,7 +11,7 @@ MLEs for a given model.
 optmod(cout,nthetas, mydata, maxiter=300,
        syssize=sum(mydata[1,-1]), tcrit=.0001,
        relerr=1e-9, abserr=1e-9, hessianh=1e-4,
-       method=1, usebfgs=0, dfunction)
+       method=1, usebfgs=0,hess=1, dfunction)
 }
 \arguments{
   \item{cout}{
@@ -63,6 +63,9 @@ optmod(cout,nthetas, mydata, maxiter=300,
   \item{usebfgs}{
     Specify whether to use the BFGS algorithm (1), or the default
     Nelder-Mead    simplex algorithm (0)
+  }
+  \item{hess}{
+    Specify whether to calculate the Hessian matrix (1), or not (0)
   }
   \item{dfunction}{
     The compiled function, given as a loaded dynamic library in R.

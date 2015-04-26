@@ -30,7 +30,7 @@ parsemod<-function(y,rfun,thetas,species,
         string <- gsub(paste(regpre,orig,"$",sep=""),
                     paste("\\1",repl,sep=""),
                     string)
-	string <- gsub(paste(regpre,orig,regpost,sep=""),
+        string <- gsub(paste(regpre,orig,regpost,sep=""),
                     paste("\\1",repl,"\\2",sep=""),
                     string)
 

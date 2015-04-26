@@ -1,8 +1,8 @@
 Package: lnar
 Type: Package
 Title: Inference for stochastic kinetic genetic networks.
-Version: 0.0.5
-Date: 2011-05-31
+Version: 0.0.6
+Date: 2015-04-27
 Author: Vasileios Giagos
 Maintainer: Vasileios Giagos <vgiagos@une.edu.au>
 Description: Likelihood based inference of stochastic kinetic models 

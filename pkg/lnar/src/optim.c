@@ -275,6 +275,37 @@ SEXP varcov (spar **mypar, const gsl_vector *v , int printh)
     return(list);
 }
 
+/**
+ * Generate result
+ */
+
+SEXP genres (spar **mypar, const gsl_vector *v , int printh)
+{
+    spar * myparams=*mypar;
+    int i,j,cover=0;
+    double tmp;
+    SEXP list,list_names,est;
+    double *p_est;
+    char *names[1]={"ES"};
+
+
+    PROTECT(est = NEW_NUMERIC(myparams->sysdim));
+    p_est=NUMERIC_POINTER(est);
+
+    for (i = 0; i < myparams->sysdim; i++){ 
+      p_est[i]= exp(gsl_vector_get(v,i));
+    }
+    
+
+    /* Create List & atach the relevant vectors*/
+    PROTECT(list_names = allocVector(STRSXP, 1));
+    SET_STRING_ELT(list_names, 0,  mkChar(names[0]));
+    PROTECT(list = allocVector(VECSXP, 1)); //Alocate list's elements
+    SET_VECTOR_ELT(list, 0, est);
+    setAttrib(list, R_NamesSymbol, list_names); //Set list's names
+    UNPROTECT(3);
+    return(list);
+}
 
 /**
  * Optimization procedure

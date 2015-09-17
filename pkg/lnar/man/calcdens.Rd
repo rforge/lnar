@@ -51,6 +51,9 @@
       Numerical, the absolute error for the numerical ordinary
       differential equations (ODEs) solver.
     }
+    \item{logprob}{
+      Boolean, indicate if the log of the probability should be returned.
+    }
     \item{syssize}{
       Numerical, indicating the system size.}
     \item{dfunction}{
@@ -66,10 +69,13 @@
   A list of the following components, estimated at each \code{tend}
   time-point:
   \item{Time}{The time instance of the estimates.}
-  \item{ODE}{The value of the ODE equation (the macroscopic model)}
-  \item{MEAN}{The mean of the SDE process.}
-  \item{VAR}{The covariance of the SDE process.}
-  \item{prob}{Optional, epxresses the estimated transition probability
+  \item{ODE}{The value of the ODE equation (the macroscopic model),
+    expressed in concentration.}
+  \item{MEAN}{The mean of the SDE process, expressed in mesoscopic units
+    (multiply by sqrt(system size) to convert to original units).}
+  \item{VAR}{The covariance of the SDE process (multiply by system size to
+      convert to original units).}
+  \item{prob}{Optional, expresses the estimated transition probability
     density, available only if\code{edata} is defined.}
 }
 %\references{

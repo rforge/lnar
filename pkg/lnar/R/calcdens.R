@@ -8,7 +8,8 @@ calcdens <- function(initdata,
                    thetas,                   
                    relerr=1e-8,
                    abserr=1e-8,
-                     syssize,
+                   syssize, 
+                   logprob=FALSE,
                    dfunction
                    )
   {
@@ -64,11 +65,6 @@ calcdens <- function(initdata,
       }
     
 
-    dmnorm <- function(x,y){
-      (pi*2)^(-length(x)/2)*abs(det(y))^{-1/2} *
-            exp(-(1/2) * ( t(x) %*% solve(y) %*% x ))
-    }
-    
     ans<-.Call("calcdens",
           initdata= as.double(initode),
           tstart= as.double(tstart),
@@ -119,7 +115,7 @@ calcdens <- function(initdata,
             ans[[1]]$MEAN * sqrt(syssize)
           y <- ans[[1]]$VAR*syssize
         }
-        ans[[1]]$prob <- dmnorm(x,y)                  
+        ans[[1]]$prob <- dmvnorm(x,sigma=y,log=logprob) 
       }
     }
     return(ans)

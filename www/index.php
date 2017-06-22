@@ -43,8 +43,6 @@ echo $contents; } ?>
 
 <!-- end of project description -->
 
-<p> No content added. </p>
-
 <p> The <strong>project summary page</strong> you can find <a href="http://<?php echo $domain; ?>/projects/<?php echo $group_name; ?>/"><strong>here</strong></a>. </p>
 <h2> Ryacas </h2>
 <p> If you have problems installing Ryacas try this experimental and unsupported java build<a href="pkgs/Ryacas_0.2-11.tar.gz">[tgz]</a>. This contains a java port of the <a href="https://en.wikipedia.org/wiki/Yacas">yacas</a></p> Install it with:

@@ -47,10 +47,11 @@ echo $contents; } ?>
 
 <p> The <strong>project summary page</strong> you can find <a href="http://<?php echo $domain; ?>/projects/<?php echo $group_name; ?>/"><strong>here</strong></a>. </p>
 <h2> Ryacas </h2>
-<p> If you have problems installing Ryacas try this experimental and unsupported java build<a href="pkgs/Ryacas_0.2-11.tar.gz">[tgz]</a>. This contains a java port of the <a href="https://en.wikipedia.org/wiki/Yacas">yacas</a></p>. Install it with
+<p> If you have problems installing Ryacas try this experimental and unsupported java build<a href="pkgs/Ryacas_0.2-11.tar.gz">[tgz]</a>. This contains a java port of the <a href="https://en.wikipedia.org/wiki/Yacas">yacas</a></p> Install it with:
 <pre>
-install.packages("http://lnar.r-forge.r-project.org/pkgs/Ryacas_0.2-11.tar.gz",
-                  repos = NULL, type = "source")
+tf = tempfile()
+download.file("http://lnar.r-forge.r-project.org/pkgs/Ryacas_0.2-11.tar.gz",tf)
+install.packages(tf,repos=NULL)
 </pre>
 <h2> Building from source </h2>
 <p> You can generate a source package from SVN by issuing the following commands in a terminal: </p>

@@ -6,10 +6,10 @@
 }
 \description{
   Given as input the reaction rates, stochastic constants and model
-  constants, the function outputs the C code (via yacas) of the
-  underlying ODEs. The system of odes express the macroscopic
-  approximation (ODE) as well as the estimates for the instanteneous
-  mean and covariance of the linear SDE from the LNA approximation.
+  constants, the function outputs the C code of the underlying ODEs. The
+  system of odes express the macroscopic approximation (ODE) as well as
+  the estimates for the instantaneous mean and covariance of the linear
+  SDE from the LNA approximation.
 }
 \usage{
 parsemod(y,rfun,thetas,species,constants=NA)
@@ -22,8 +22,7 @@ parsemod(y,rfun,thetas,species,constants=NA)
   }
   \item{rfun}{
     A character vector with each elements expressing the reaction
-    rates. Note that each reaction should be parsed with no errors
-    by ryacas' interface.
+    rates.  
   }
   \item{thetas}{
     A character vector which denotes the stochastic constant names
@@ -33,8 +32,9 @@ parsemod(y,rfun,thetas,species,constants=NA)
     A character vector which denotes the species names.
   }
   \item{constants}{
-    A character vector which denotes the model constants. The model
-    constants are substituted in the C code by their numeric value.
+    Not supported yet.
+    %A character vector which denotes the model constants. The model
+    %constants are substituted in the C code by their numeric value.
   }
 }
 
@@ -78,10 +78,10 @@ parsemod(y,rfun,thetas,species,constants=NA)
 %}
 \details{
   The derivation of the ODEs  is accomplished with the help of
-  \pkg{Ryacas} package, an interface between R and the symbolic computer
-  algebra system Yacas. The derived ODEs are joined together,
-  i.e. treated as a single system, and are expressed as C code. In
-  particular, they are expressed as a C function of the following form:
+  Deriv package and some symbolic algebra routines written in R. The
+  derived ODEs are joined together, i.e. treated as a single system, and
+  are expressed as C code. In particular, they are expressed as a C
+  function of the following form:
   \preformatted{
 double * name (double * t, double * y, double * fout, double * vthetas)}
   }

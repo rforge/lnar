@@ -1,106 +1,134 @@
-parsemod<-function(y,rfun,thetas,species,
-                     constants=NA)
-{
-    lenthetas <- length(thetas)
-    lenspecies <- length(species)
-    
-    dimy<- dim(y)
-    txt<-paste(sapply(seq(dimy[1]),
-	    function(x) paste("{",paste(y[x,],sep="",collapse=","),"}") ),
-	    collapse=",",sep=",")
-    
-    stoich<-paste("A:={",txt,"}",sep="") #Stoichiometry Matrix
-    yspecies <- paste("y[",seq(lenspecies),"]",sep="")
-    names(yspecies) <- species
-    ythetas <- paste("theta[",seq(lenthetas),"]",sep="")
-    names(ythetas) <- thetas
-    yrfun <- rfun
-
-    makesubs <- function(orig,repl,string)
-      {
-        ##Regular Expressions between math symbols
-        regpre <- "([[:punct:][:space:]]+)"
-        regpost <- "([[:punct:][:space:]]+)"
-        string <- gsub(paste(regpre,orig,regpost,sep=""),
-                    paste("\\1",repl,"\\2",sep=""),
-                    string)
-        string <- gsub(paste("^",orig,regpost,sep=""),
-                       paste(repl,"\\1",sep=""),
-                       string)
-        string <- gsub(paste(regpre,orig,"$",sep=""),
-                    paste("\\1",repl,sep=""),
-                    string)
-        string <- gsub(paste(regpre,orig,regpost,sep=""),
-                    paste("\\1",repl,"\\2",sep=""),
-                    string)
-
-        return(string)
-      }
-
-    for (x in seq(lenspecies)) {
-      yrfun <- makesubs(species[x],yspecies[x],yrfun)
-    }
-
-    for (x in seq(lenthetas)) {
-      yrfun <- makesubs(thetas[x],ythetas[x],yrfun)
-    }
-    if(!is.na(constants))
-      {
-        #Substitute the constants in the equation
-        lencon <- length(constants)
-        for (x in seq(lencon)) {
-          yrfun <- makesubs(names(constants)[x],constants[x],yrfun)
+Mult <- function(A,B){
+    dA=dim(A)
+    inspar <- function(x) paste0("(",x,")")
+    if(is.vector(B)){        
+        stopifnot(dA[2]==length(B))
+        res <- character(dA[1])
+        for(i in 1:dA[1]){
+            for(j in 1:dA[2]){
+                tmp=paste(inspar(A[i,j]),inspar(B[j]),sep = "*")
+                tmp=Deriv::Simplify(tmp)
+                res[i] <- ifelse(j==1,tmp,paste(res[i],tmp,sep = "+"))
+            }
+            res[i]=Deriv::Simplify(res[i])
         }
-      }    
-    yrates <- paste("rates:={",paste(yrfun,collapse=","),"}")
-
-    #paste(find.package("lnar"),"/extra/test.ys",sep="") #yacas template
-    require(Ryacas)
-    #options(yacas.method = 'system')
-    yacfile <- paste(find.package("lnar"),"/extra/test.ys",sep="")
-
-    if(package_version(packageDescription("Ryacas",fields="Version"))
-       <"0.2.11") {
-      yacas(stoich)
-      yacas(yrates)
-      cout <- yacas(paste("Load(\"",yacfile,"\")",sep=""))
-      yacasStop()
     }else{
-      cout <- yacas(
-                    paste("[",
-                          stoich,";",
-                          yrates,";",
-                          paste("Load(\"",yacfile,"\")",sep=""),";]",
-                          sep=""),
-                    method="system")
+        dB=dim(B)
+        stopifnot(dA[2]==dB[1])
+        res <- matrix(" ",
+                      nrow = dA[1], ncol = dB[2])
+        for(i in seq.int(dA[1]))
+            for(j in seq.int(dB[2])){
+                for(k in seq.int(dB[1])){
+                    tmp=paste(inspar(A[i,k]),inspar(B[k,j]),sep="*")
+                    tmp=Deriv::Simplify(tmp)
+                    res[i,j] <- ifelse(k==1,tmp,paste(res[i,j],tmp,sep="+"))                    
+                }
+                res[i,j]=Deriv::Simplify(res[i,j])
+            }                
     }
-    #print(cout)
-    cout$PrettyForm <- grep("^[fd]",cout$PrettyForm,value=TRUE)
-    cout <- paste( paste(cout$PrettyForm,collapse="\n") ,collapse="")
-    cout<-sub("True\n","",as.character(cout))
-    cspecies<- paste("y[",seq(lenspecies)-1,"]",sep="")
-    cthetas <- paste("vthetas[",seq(lenthetas)-1,"]",sep="")
-    names(cspecies) <- species
-    names(cthetas)<-thetas
-    lens <- (lenspecies+1)*(lenspecies)/2
-    Covariances<-paste("y[",seq(lenspecies, lenspecies+lens -1),"]",sep="")
-    xx<-outer(species,species,FUN="paste",sep=",")
-    names(Covariances) <- paste("Cov(",xx[upper.tri(xx,TRUE)],")",sep="")
-    mspecies <- paste("y[",seq(lens+lenspecies, lens+2*lenspecies -1),"]",
-                      sep="")
-    names(mspecies) <- paste("Mean",species)
+    res
+}
+Add <- function(A,B){
+    dA <- dim(A)
+    dB <- dim(B)
+    stopifnot(dA[1]==dB[1] && dA[2]==dB[2])
+    res <- matrix(NA,dA[1],dA[2])
+    res[] <- mapply(paste,A,B,sep="+")
+    res[] <- vapply(res,Deriv::Simplify,as.character(0))
+    res
+}
+eqpars <- function(x,subs){
+    expr1 = parse(text=x)
+    envsubs = sapply(subs,as.name)
+    tmp1=lapply(expr1, function(x)
+        do.call(what=substitute, list(expr=x,env=envsubs)))
+    vapply(X=tmp1,FUN=deparse,FUN.VALUE = as.character(0),width.cutoff=500,backtick = FALSE)
+}
+
+parsemod<-function(stoich,rfun,thetas,species,constants=NA)
+{
+    ## C language conversions
+    cexpr <- c("pow")
+    names(cexpr) <- c("^")
+    ######## Set up Variables/Names
+    ## Thetas
+    cthetas = sapply(seq_len(length(thetas))-1,function(x) sprintf("vthetas[%i]",x))
+    names(cthetas) = thetas
+    nspecies = length(species)
+    ncov = nspecies*(nspecies +1)/2 
+    odesize = 2*nspecies + ncov
+    # ODE Species
+    yode = sapply(0:(nspecies-1),function(x) sprintf("y[%i]",x))
+    names(yode) = species    
+    ## Covariance
+    ## Here we have different names => symbols 
+    covnames1<-outer(species,species,FUN="paste",sep=",")
+    ## Default: Cov(x1,x2) => y[2], human friendly-explicit
+    ccov = sapply(seq(ncov)+nspecies-1,function(x) sprintf("y[%i]",x))
+    names(ccov) <- paste("Cov(",covnames1[upper.tri(covnames1,TRUE)],")",sep="")
+    ccovs <- sapply(seq(ncov),function(x) sprintf("s%i",x))
+    ## Math notation, s[1, 1] => "y[2]" -- Not used
+    if(F){
+        ccov2=ccov # S-names with y notation
+        NamesMat <- outer(paste0("s[",seq(nspecies)),paste0(seq(nspecies),"]"),paste,sep=",")
+        NamesVec <- NamesMat[upper.tri(NamesMat,T)]
+        covnames <- vapply(
+            NamesVec, Deriv::Simplify,
+            as.character(0), USE.NAMES = F)
+        names(ccov2) <- covnames
+    }
+    ## s1 => y[2] used for symbolic calcs
+    ccov3=ccov
+    names(ccov3) = ccovs 
+    Smat = outer(paste0("s[",seq(nspecies)),paste0(seq(nspecies),"]"),paste,sep=",")
+    ##Smat = matrix(paste0("s",seq(nspecies^2)),nspecies,nspecies,byrow = T)
+    ## Crate Smat
+    Smat[lower.tri(Smat,T)] = ccovs 
+    Smat[upper.tri(Smat)]=t(Smat)[upper.tri(Smat)]
+    ## Residual Process
+    mt = sapply(seq(nspecies)-1 + ncov +nspecies,function(x) sprintf("y[%i]",x))
+    names(mt) = paste0("m",seq(nspecies))
+    c(yode,ccov3,mt)
+    ##-------- Start the symbolic calcs
+    ## dim(A')=(Nspecies,Nreactions), stoich = A'
+    ## dy = A' h(y)
+    (dY=Mult(stoich,rfun))
+    subs=c(species,cthetas,yode,ccov3,mt,cexpr)
+    ## Generate Fmat = A'*F'  where: F[i,j] = d(h_j(y)) / dm_i
+    lenrf = length(rfun)
+    Fmat=matrix(NA,nspecies,lenrf,byrow = T)
+    for(i in seq(nspecies)){
+        for(j in seq(lenrf)){
+            Fmat[i,j] = Deriv::Deriv(rfun[j],species[i])
+        }
+    }
+    Fmat=Mult(stoich,t(Fmat))
+    ## dS = F S + S F' + A' diag(h(y)) A
+    s1=Mult(Fmat,Smat)
+    s2=Mult(Smat,t(Fmat))
+    s3 = Add(s1,s2)
+    Mh <- diag(lenrf)
+    diag(Mh) <- rfun
+    s4=Mult(stoich,Mult(Mh,t(stoich)))
+    s5 = Add(s4,s3)
+    dS <-  s5[lower.tri(s5,T)]
+    ## dm = F m
+    m = paste0("m",seq(nspecies))
+    dm = Mult(Fmat,m)
+    ## Output C code
+    eqs = c(eqpars(dY,subs),eqpars(dS,subs),eqpars(dm,subs))
+    cout=vapply(seq(odesize),function(x) paste0("fout[",x-1,"]= ",eqs[x],";"),as.character(0))
+    cout=paste(cout,collapse = "\n")
+    yrfun <- eqpars(rfun,subs)
+    names(mt) <- paste("Mean",species)
     return(list(ccode=cout,
-                cspecies=cspecies,
+                cspecies=yode,
                 cthetas= cthetas,
-                Cov=Covariances,
-                Means=mspecies,
-                Orders= ( sapply(strsplit(yrfun,"y\\["),length)-1 ),
-                yac=paste("[",
-                          stoich,";",
-                          yrates,";",
-                          paste("Load(\"",yacfile,"\")",sep=""),";]",
-                          sep="")
-		##Finds the reaction orders
+                Cov=ccov,
+                Means=mt,
+                ##Finds the reaction orders
+                Orders= ( sapply(strsplit(yrfun,"y\\["),length)-1 )
                 )
            )
 }
